@@ -1,16 +1,32 @@
 <h1><%= @post.title %></h1>
 <p><%= @post.content %></p>
 <h2>Categories:</h2>
-<% @categories.each do |category| %>
+<% @post.categories.each do |category| %>
     <p><%= category.name %></p>
 <% end %>
 <h2>Comments:</h2>
-<% @comments.each do |comment|  %>
-    <p><%= comment.content %></p>
+<% @post.comments.each do |comment| %>
+    <p><%= comment.user.username %> says: <%= comment.content %></p>
 <% end %>
-<p></p>
+<h3>Add a New Comment:</h3>
+<%= form_for @comment do |f| %>
+    <%= f.hidden_field :post_id, value: @post.id %>
+    <%= f.label :content %>
+    <%= f.text_area :content %>
+    <h4>Select a User:</h4>
+    <%= f.collection_select :user_id, @users, :id, :username, { include_blank: "Select a User" } %>
+    <h4>Or, Create a New User:</h4>
+    <%= f.fields_for :user, @comment.build_user do |user_fields| %>
+        <%= user_fields.label :username %>
+        <%= user_fields.text_field :username %>
+        <%= user_fields.label :email %>
+        <%= user_fields.text_field :email %>
+    <% end %>
+    <br>
+    <%= f.submit %>    
+<% end %>
 <h2>Unique Users:</h2>
-<% @users.each do |user| %>
-    <p><%= user.name %></p>
+<% @post.users.uniq.each do |user| %>
+    <p><%= link_to user.username, user_path(user) %></p>
 <% end %>
-<p></p>
+
